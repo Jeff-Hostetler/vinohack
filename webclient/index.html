@@ -1,0 +1,134 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Vino Hack</title>
+  <!-- for mobile -->
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <!-- Latest compiled and minified CSS -->
+  <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css"
+        integrity="sha384-BVYiiSIFeK1dGmJRAkycuHAHRg32OmUcww7on3RYdg4Va+PmSTsz/K68vbdEjh4u" crossorigin="anonymous">
+
+  <!-- Optional theme -->
+  <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap-theme.min.css"
+        integrity="sha384-rHyoN1iRsVXV4nD0JutlnGaslCJuC7uwjduW9SVrLvRYooPp2bWYgmgJQIXwl/Sp" crossorigin="anonymous">
+
+  <!-- Latest compiled and minified JavaScript -->
+  <!--<script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js" integrity="sha384-Tc5IQib027qvyjSMfHjOMaLkfuWVxZxUPnCJA7l2mCWNIpG9mGCD8wGNIcPD7Txa" crossorigin="anonymous"></script>-->
+  <script src="https://unpkg.com/vue"></script>
+  <link href="https://cdn.jsdelivr.net/npm/animate.css@3.5.1" rel="stylesheet" type="text/css">
+</head>
+<body>
+<div id="app" class="container">
+  <div class="jumbotron">
+    <h1>Vino Hack</h1>
+    <p>Wine pairing made simple.</p>
+  </div>
+
+  <!--Selection section-->
+  <transition  name="custom-classes-transition"
+               enter-active-class="animated bounceInLeft"
+               leave-active-class="animated bounceOutRight">
+    <div v-if="showSection === 'foods'">
+      <div class="lead">Select the ingredients you are using</div>
+      <form class="form-inline pb-3">
+        <div class="form-group">
+          <label class="sr-only" for="foodSearch">Food Search</label>
+          <input type="email" class="form-control" id="foodSearch" placeholder="Search Foods">
+        </div>
+        <div class="form-group">
+        </div>
+        <div class="form-group">
+        </div>
+      </form>
+      <div class="row">
+        <div v-for="food in foods">
+          <div class="col-xs-4">
+            <button class="btn btn-default" v-on:click="addToRecipe(food)"> {{ food }}</button>
+          </div>
+        </div>
+      </div>
+      <div class="lead">Recipe: {{ getRecipe() }}</div>
+
+      <div class="lead">If you are cooking in a particular regional style, select the region below.</div>
+      <div class="row">
+        <div v-for="region in regions">
+          <div class="col-xs-4">
+            <button class="btn btn-default" v-on:click="selectRegion(region)"> {{ region }}</button>
+          </div>
+        </div>
+      </div>
+      <div class="lead">Selected region: {{selectedRegion}}</div>
+
+      <button class="btn btn-primary btn-lg pull-right" v-on:click="pair()">Get Pairing</button>
+    </div>
+  </transition>
+
+  <!--Paring section-->
+  <transition name="custom-classes-transition"
+              enter-active-class="animated bounceInLeft"
+              leave-active-class="animated bounceOutRight">
+    <div v-if="showSection === 'wines'">
+      <div class="lead">The following wines can be paired with your recipe.</div>
+      <div class="lead">Recipe: {{ getRecipe() }}</div>
+      <div class="lead">Region: {{ selectedRegion }}</div>
+
+      <div v-for="wine in wines">
+        <div class="row">
+          <dl class="dl-horizontal">
+            <dt>Grape</dt>
+            <dd> {{wine.name}}</dd>
+            <dt>Description</dt>
+            <dd> {{wine.description}}</dd>
+          </dl>
+        </div>
+      </div>
+      <button class="btn btn-primary btn-lg pull-right" v-on:click="goToFoods()">Go back</button>
+    </div>
+  </transition>
+</div>
+
+<script>
+  var app = new Vue({
+    el: '#app',
+    data: {
+      showSection: 'foods',
+      selectedRegion: '',
+      foods: ['Mushroom', 'Carrot', 'Onion', 'Celery', 'Apple', 'Banana', 'Tomato', 'Squash', 'Rice', 'Pasta'],
+      regions: ['Italian', 'French', 'California', 'Indian', 'Japanese', 'Spanish'],
+      wines: [
+        {
+          name: 'Riesling',
+          description: 'Probably the best grape. This versatile grape ranges from sweet to dry. Tasting notes include nutty, gas, and other great shit'
+        },
+        {
+          name: 'Melon de Burgonia',
+          description: 'A wine for true wine lovers. Kelcey loves this wine, and we are sure you will too.'
+        },
+        {
+          name: 'Chardonnay',
+          description: 'Depending on the barreling this wine ranges from crisp and fruity to round and buttery. Often aged in oak, the wine takes on a nuttt, buttery flavor.'
+        }
+      ],
+      recipe: []
+    },
+    methods: {
+      addToRecipe: function (food) {
+        this.recipe = this.recipe.concat(food)
+      },
+      getRecipe: function () {
+        return this.recipe.join(' ')
+      },
+      selectRegion: function (region) {
+        return this.selectedRegion = region;
+      },
+      pair: function () {
+        this.showSection = 'wines'
+      },
+      goToFoods: function () {
+        this.showSection = 'foods'
+      }
+    }
+  })
+</script>
+</body>
+</html>
