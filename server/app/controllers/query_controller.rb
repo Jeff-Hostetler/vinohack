@@ -7,7 +7,7 @@ class QueryController < ApplicationController
     context = {}
 
     result = PairingApiSchema.execute(query, variables: variables, context: context, operation_name: operation_name)
-    status = result.query.static_errors.any? ? :unprocessable_entity : :ok
+    status = get_result_status(result, context)
     render json: result, status: status
   end
 
@@ -17,18 +17,22 @@ class QueryController < ApplicationController
   # from graphql generator
   def ensure_hash(ambiguous_param)
     case ambiguous_param
-    when String
-      if ambiguous_param.present?
-        ensure_hash(JSON.parse(ambiguous_param))
-      else
+      when String
+        if ambiguous_param.present?
+          ensure_hash(JSON.parse(ambiguous_param))
+        else
+          {}
+        end
+      when Hash, ActionController::Parameters
+        ambiguous_param
+      when nil
         {}
-      end
-    when Hash, ActionController::Parameters
-      ambiguous_param
-    when nil
-      {}
-    else
-      raise ArgumentError, "Unexpected parameter: #{ambiguous_param}"
+      else
+        raise ArgumentError, "Unexpected parameter: #{ambiguous_param}"
     end
+  end
+
+  def get_result_status(result, context)
+    result.query.static_errors.any? || context[:return_error_response] ? :unprocessable_entity : :ok
   end
 end
